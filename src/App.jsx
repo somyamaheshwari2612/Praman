@@ -1,122 +1,129 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import { useState } from "react";
+import ReportForm from "./components/ReportForm";
+import MapView from "./components/MapView";
+import PressureBoard from "./components/PressureBoard";
 
-function App() {
-  const [count, setCount] = useState(0)
+export default function App() {
+  const [tab, setTab] = useState("board");
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+    <div style={styles.root}>
 
-      <div className="ticks"></div>
+      {/* Top header */}
+      <div style={styles.topBar}>
+        <span style={styles.logo}>प्रमाण</span>
+        <span style={styles.logoSub}>PRAMAN</span>
+      </div>
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+      {/* Page content */}
+      <div style={styles.content}>
+        {tab === "report" && <ReportForm onSubmitSuccess={() => setTab("board")} />}
+        {tab === "map"    && <MapView />}
+        {tab === "board"  && <PressureBoard />}
+      </div>
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+      {/* Bottom tab bar */}
+      <nav style={styles.tabBar}>
+        {[
+          { id: "board",  icon: "🔥", label: "Pressure" },
+          { id: "report", icon: "📸", label: "Report"   },
+          { id: "map",    icon: "🗺️", label: "Map"      },
+        ].map(t => (
+          <button
+            key={t.id}
+            style={{
+              ...styles.tabBtn,
+              ...(tab === t.id ? styles.tabBtnActive : {})
+            }}
+            onClick={() => setTab(t.id)}
+          >
+            <span style={styles.tabIcon}>{t.icon}</span>
+            <span style={{
+              ...styles.tabLabel,
+              color: tab === t.id ? "#a78bfa" : "#555"
+            }}>
+              {t.label}
+            </span>
+          </button>
+        ))}
+      </nav>
+
+    </div>
+  );
 }
 
-export default App
+const styles = {
+  root: {
+    display: "flex",
+    flexDirection: "column",
+    minHeight: "100vh",
+    background: "#0d0d0d",
+    maxWidth: 600,
+    margin: "0 auto",
+    position: "relative"
+  },
+  topBar: {
+    display: "flex",
+    alignItems: "baseline",
+    gap: 8,
+    padding: "14px 20px 10px",
+    borderBottom: "1px solid #1a1a1a",
+    background: "#0d0d0d",
+    position: "sticky",
+    top: 0,
+    zIndex: 100
+  },
+  logo: {
+    fontSize: 22,
+    fontWeight: 800,
+    color: "#a78bfa",
+    letterSpacing: 1
+  },
+  logoSub: {
+    fontSize: 11,
+    fontWeight: 600,
+    color: "#444",
+    letterSpacing: 3
+  },
+  content: {
+    flex: 1,
+    overflowY: "auto",
+    paddingBottom: 70 // space for tab bar
+  },
+  tabBar: {
+    display: "flex",
+    position: "fixed",
+    bottom: 0,
+    left: "50%",
+    transform: "translateX(-50%)",
+    width: "100%",
+    maxWidth: 600,
+    background: "#111",
+    borderTop: "1px solid #1e1e1e",
+    zIndex: 200
+  },
+  tabBtn: {
+    flex: 1,
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    padding: "10px 0 8px",
+    background: "transparent",
+    border: "none",
+    cursor: "pointer",
+    gap: 3
+  },
+  tabBtnActive: {
+    borderTop: "2px solid #a78bfa",
+    background: "#0d0d0d"
+  },
+  tabIcon: {
+    fontSize: 20
+  },
+  tabLabel: {
+    fontSize: 10,
+    fontWeight: 600,
+    letterSpacing: 0.5,
+    textTransform: "uppercase"
+  }
+};
