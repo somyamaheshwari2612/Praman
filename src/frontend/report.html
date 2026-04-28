@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Report Issue</title>
+<link rel="icon" type="image/png" href="images/logo.png">
+
+<link rel="stylesheet" href="style.css">
+
+<!-- Leaflet CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css">
+
+</head>
+<body>
+
+<header>
+<nav class="navbar">
+
+<div class="logo">
+<img src="images/logo.png" alt="Praman Logo">
+<span>प्रमाण</span>
+</div>
+
+<ul class="nav-links">
+<li><a href="board.html">Public Board</a></li>
+<li><a href="report.html">+ Report Issue</a></li>
+</ul>
+
+</nav>
+</header>
+
+<section class="report-page">
+
+<p class="small-heading">FILE A REPORT</p>
+
+<h1>Report a Civic Issue</h1>
+
+<form id="reportForm">
+
+<label>Photo Evidence</label>
+<input type="file" id="photo" accept="image/*" capture="environment">
+
+<label>Issue Title</label>
+<input type="text" id="title">
+
+<label>Category</label>
+<select id="category">
+<option value="">Select Category</option>
+<option>Roads</option>
+<option>Sanitation</option>
+<option>Electricity</option>
+<option>Water</option>
+</select>
+
+<label>Choose Location</label>
+
+<div class="location-buttons">
+<button type="button" id="useCurrent">Use Current Location</button>
+<button type="button" id="pickMap">Choose From Map</button>
+</div>
+
+<input type="text" id="location" readonly>
+
+<div id="map"></div>
+
+<label>Description</label>
+<textarea id="description"></textarea>
+
+<button type="submit">Submit Report</button>
+
+</form>
+
+</section>
+
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<!-- Main JS -->
+<script src="script.js"></script>
+
+</body>
+</html>
