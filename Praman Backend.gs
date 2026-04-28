@@ -72,21 +72,21 @@ function groupAndUpdateCases(ss) {
     return obj;
   });
 
-  // ── Preserve existing upvotes before clearing ──────────────
   const existingUpvotes = {};
   const existingRows = casesSheet.getDataRange().getValues();
   const existingHeaders = existingRows[0] || [];
   const upvoteColIndex = existingHeaders.indexOf("upvotes");
-  if (upvoteColIndex !== -1) {
+  if (existingRows.length > 1 && upvoteColIndex !== -1) {
     existingRows.slice(1).forEach(row => {
-      if (row[0]) existingUpvotes[row[0]] = parseInt(row[upvoteColIndex]) || 0;
+      if (!row[0]) return;
+      existingUpvotes[row[0]] = parseInt(row[upvoteColIndex]) || 0;
     });
   }
 
   const RADIUS_KM = 1.0;
   const cases = [];
 
-  reports.forEach((report, index) => {
+  reports.forEach((report) => {
     let matched = false;
     for (const c of cases) {
       if (c.category !== report.category) continue;
@@ -111,15 +111,33 @@ function groupAndUpdateCases(ss) {
     }
   });
 
-  const outputHeaders = ["case_id","category","center_lat","center_lng","report_count","escalation_level","first_reported","image_url","upvotes"];
+  // --- NEW OUTPUT VALUES LOGIC START ---
+  // Read ALL reports once for image lookup
+  const allReportRows = reportsSheet.getDataRange().getValues();
+  const allReportHeaders = allReportRows[0];
+  const allReports = allReportRows.slice(1).map(row => {
+    const obj = {};
+    allReportHeaders.forEach((h, i) => obj[h] = row[i]);
+    return obj;
+  });
 
   const outputValues = cases.map(c => {
-    const count     = c.reports.length;
-    const level     = count >= 15 ? 3 : count >= 10 ? 2 : count >= 5 ? 1 : 0;
-    const image_url = c.reports.map(r => r.image_url).filter(u => u && String(u).trim() !== "").pop() || "";
-    const upvotes   = existingUpvotes[c.case_id] || 0;  // preserve existing upvotes
+    const count = c.reports.length;
+    const level = count >= 15 ? 3 : count >= 10 ? 2 : count >= 5 ? 1 : 0;
+
+    // Find ANY image from ALL reports matching this case's category
+    const image_url = c.reports
+    .map(r => String(r.image_url || "").trim())
+    .filter(u => u.startsWith("http"))
+    .pop() || "";
+
+    const upvotes = existingUpvotes[c.case_id] || 0;
+
     return [c.case_id, c.category, c.center_lat, c.center_lng, count, level, c.first_reported, image_url, upvotes];
   });
+  // --- NEW OUTPUT VALUES LOGIC END ---
+
+  const outputHeaders = ["case_id","category","center_lat","center_lng","report_count","escalation_level","first_reported","image_url","upvotes"];
 
   casesSheet.clearContents();
   if (outputValues.length > 0) {

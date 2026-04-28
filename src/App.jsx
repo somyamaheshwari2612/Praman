@@ -1,129 +1,50 @@
 import { useState } from "react";
-import ReportForm from "./components/ReportForm";
-import MapView from "./components/MapView";
+import LandingPage   from "./components/LandingPage";
+import ReportForm    from "./components/ReportForm";
+import MapView       from "./components/MapView";
 import PressureBoard from "./components/PressureBoard";
+import CaseDetail    from "./components/CaseDetail";
 
 export default function App() {
-  const [tab, setTab] = useState("board");
+  const [tab, setTab]         = useState("home");
+  const [activeCase, setActiveCase] = useState(null);
+
+  function openCase(c) { setActiveCase(c); setTab("case"); }
+  function goBack()    { setActiveCase(null); setTab("board"); }
 
   return (
-    <div style={styles.root}>
+    <div style={s.root}>
+      <header style={s.navbar}>
+        <div style={s.logo} onClick={() => setTab("home")}>
+          <span style={s.logoText}>प्रमाण</span>
+        </div>
+        <nav style={s.navLinks}>
+          <button style={s.navBtn} onClick={() => setTab("board")}>Public Board</button>
+          <button
+            style={{ ...s.navBtn, ...s.navBtnOrange }}
+            onClick={() => setTab("report")}
+          >+ Report Issue</button>
+        </nav>
+      </header>
 
-      {/* Top header */}
-      <div style={styles.topBar}>
-        <span style={styles.logo}>प्रमाण</span>
-        <span style={styles.logoSub}>PRAMAN</span>
-      </div>
-
-      {/* Page content */}
-      <div style={styles.content}>
+      <main style={s.content}>
+        {tab === "home"   && <LandingPage onNavigate={setTab} />}
+        {tab === "board"  && <PressureBoard onOpenCase={openCase} />}
         {tab === "report" && <ReportForm onSubmitSuccess={() => setTab("board")} />}
         {tab === "map"    && <MapView />}
-        {tab === "board"  && <PressureBoard />}
-      </div>
-
-      {/* Bottom tab bar */}
-      <nav style={styles.tabBar}>
-        {[
-          { id: "board",  icon: "🔥", label: "Pressure" },
-          { id: "report", icon: "📸", label: "Report"   },
-          { id: "map",    icon: "🗺️", label: "Map"      },
-        ].map(t => (
-          <button
-            key={t.id}
-            style={{
-              ...styles.tabBtn,
-              ...(tab === t.id ? styles.tabBtnActive : {})
-            }}
-            onClick={() => setTab(t.id)}
-          >
-            <span style={styles.tabIcon}>{t.icon}</span>
-            <span style={{
-              ...styles.tabLabel,
-              color: tab === t.id ? "#a78bfa" : "#555"
-            }}>
-              {t.label}
-            </span>
-          </button>
-        ))}
-      </nav>
-
+        {tab === "case"   && <CaseDetail caseData={activeCase} onBack={goBack} />}
+      </main>
     </div>
   );
 }
 
-const styles = {
-  root: {
-    display: "flex",
-    flexDirection: "column",
-    minHeight: "100vh",
-    background: "#0d0d0d",
-    maxWidth: 600,
-    margin: "0 auto",
-    position: "relative"
-  },
-  topBar: {
-    display: "flex",
-    alignItems: "baseline",
-    gap: 8,
-    padding: "14px 20px 10px",
-    borderBottom: "1px solid #1a1a1a",
-    background: "#0d0d0d",
-    position: "sticky",
-    top: 0,
-    zIndex: 100
-  },
-  logo: {
-    fontSize: 22,
-    fontWeight: 800,
-    color: "#a78bfa",
-    letterSpacing: 1
-  },
-  logoSub: {
-    fontSize: 11,
-    fontWeight: 600,
-    color: "#444",
-    letterSpacing: 3
-  },
-  content: {
-    flex: 1,
-    overflowY: "auto",
-    paddingBottom: 70 // space for tab bar
-  },
-  tabBar: {
-    display: "flex",
-    position: "fixed",
-    bottom: 0,
-    left: "50%",
-    transform: "translateX(-50%)",
-    width: "100%",
-    maxWidth: 600,
-    background: "#111",
-    borderTop: "1px solid #1e1e1e",
-    zIndex: 200
-  },
-  tabBtn: {
-    flex: 1,
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    padding: "10px 0 8px",
-    background: "transparent",
-    border: "none",
-    cursor: "pointer",
-    gap: 3
-  },
-  tabBtnActive: {
-    borderTop: "2px solid #a78bfa",
-    background: "#0d0d0d"
-  },
-  tabIcon: {
-    fontSize: 20
-  },
-  tabLabel: {
-    fontSize: 10,
-    fontWeight: 600,
-    letterSpacing: 0.5,
-    textTransform: "uppercase"
-  }
+const s = {
+  root:         { minHeight: "100vh", background: "#f7f4f2", maxWidth: 1200, margin: "0 auto" },
+  navbar:       { display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 40px", height: 70, borderBottom: "1px solid #e7ddd8", background: "#fff", position: "sticky", top: 0, zIndex: 100 },
+  logo:         { cursor: "pointer" },
+  logoText:     { fontSize: 24, fontWeight: 800, color: "#ef5b1f" },
+  navLinks:     { display: "flex", gap: 12, alignItems: "center" },
+  navBtn:       { padding: "8px 18px", background: "transparent", border: "1px solid transparent", borderRadius: 8, fontSize: 14, fontWeight: 500, color: "#111", cursor: "pointer" },
+  navBtnOrange: { border: "1px solid #ef5b1f", color: "#ef5b1f" },
+  content:      { flex: 1 },
 };

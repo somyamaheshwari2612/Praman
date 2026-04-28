@@ -24,18 +24,30 @@ export default function ReportForm({ onSubmitSuccess }) {
 
   // ── Get GPS location ─────────────────────────────────────
   function handleGetLocation() {
-    setStatus("locating");
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        setLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude });
-        setStatus("idle");
-      },
-      () => {
-        setErrorMsg("Location access denied. Please allow it and try again.");
-        setStatus("error");
-      }
-    );
+  setStatus("locating");
+  if (!navigator.geolocation) {
+    setErrorMsg("Geolocation is not supported by your browser.");
+    setStatus("error");
+    return;
   }
+  navigator.geolocation.getCurrentPosition(
+    (pos) => {
+      setLocation({ 
+        lat: pos.coords.latitude, 
+        lng: pos.coords.longitude 
+      });
+      setStatus("idle");
+    },
+    (err) => {
+      console.error("Location error:", err.code, err.message);
+      if (err.code === 1) setErrorMsg("Location access denied. Please allow location in browser settings.");
+      else if (err.code === 2) setErrorMsg("Location unavailable. Try again.");
+      else setErrorMsg("Location request timed out. Try again.");
+      setStatus("error");
+    },
+    { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+  );
+}
 
   // ── Image preview ─────────────────────────────────────────
   function handleImageChange(e) {
@@ -191,100 +203,18 @@ export default function ReportForm({ onSubmitSuccess }) {
 
 // ── Styles ────────────────────────────────────────────────────
 const styles = {
-  container: {
-    maxWidth: 480,
-    margin: "0 auto",
-    padding: "24px 20px",
-    display: "flex",
-    flexDirection: "column",
-    gap: 12,
-    background: "#111",
-    minHeight: "100vh",
-    color: "#fff"
-  },
-  title: {
-    fontSize: 22,
-    fontWeight: 700,
-    marginBottom: 8,
-    color: "#fff"
-  },
-  label: {
-    fontSize: 13,
-    fontWeight: 600,
-    color: "#aaa",
-    marginBottom: 2
-  },
-  select: {
-    padding: "10px 12px",
-    borderRadius: 8,
-    border: "1px solid #333",
-    background: "#1a1a1a",
-    color: "#fff",
-    fontSize: 15
-  },
-  textarea: {
-    padding: "10px 12px",
-    borderRadius: 8,
-    border: "1px solid #333",
-    background: "#1a1a1a",
-    color: "#fff",
-    fontSize: 15,
-    resize: "vertical"
-  },
-  fileInput: {
-    color: "#aaa",
-    fontSize: 14
-  },
-  preview: {
-    width: "100%",
-    borderRadius: 10,
-    maxHeight: 200,
-    objectFit: "cover",
-    border: "1px solid #333"
-  },
-  locationBox: {
-    padding: "10px 12px",
-    borderRadius: 8,
-    background: "#1a1a1a",
-    border: "1px solid #333",
-    fontSize: 13,
-    color: "#ccc"
-  },
-  btnPrimary: {
-    padding: "13px 20px",
-    background: "#6d28d9",
-    color: "#fff",
-    border: "none",
-    borderRadius: 10,
-    fontSize: 16,
-    fontWeight: 700,
-    cursor: "pointer",
-    marginTop: 8
-  },
-  btnSecondary: {
-    padding: "10px 16px",
-    background: "#1a1a1a",
-    color: "#a78bfa",
-    border: "1px solid #6d28d9",
-    borderRadius: 8,
-    fontSize: 14,
-    cursor: "pointer"
-  },
-  error: {
-    color: "#f87171",
-    fontSize: 13,
-    margin: 0
-  },
-  successBox: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-    minHeight: "100vh",
-    background: "#111",
-    color: "#fff",
-    textAlign: "center",
-    padding: 32,
-    gap: 8
-  }
+  container:    { maxWidth: 640, margin: "0 auto", padding: "48px 40px 80px", background: "#f7f4f2", minHeight: "100vh" },
+  smallHeading: { color: "#ef5b1f", fontSize: 11, letterSpacing: 2, fontWeight: 600, marginBottom: 8 },
+  title:        { fontSize: 38, fontWeight: 800, color: "#111", marginBottom: 32 },
+  label:        { fontSize: 13, fontWeight: 600, color: "#555", marginBottom: 6, display: "block" },
+  select:       { width: "100%", padding: "14px 16px", borderRadius: 10, border: "1px solid #ddd", background: "#fff", color: "#111", fontSize: 15, fontFamily: "Poppins, sans-serif" },
+  textarea:     { width: "100%", padding: "14px 16px", borderRadius: 10, border: "1px solid #ddd", background: "#fff", color: "#111", fontSize: 15, resize: "vertical", fontFamily: "Poppins, sans-serif" },
+  fileInput:    { color: "#888", fontSize: 14 },
+  preview:      { width: "100%", borderRadius: 12, maxHeight: 220, objectFit: "cover", border: "1px solid #eee", marginTop: 8 },
+  locationBox:  { padding: "14px 16px", borderRadius: 10, background: "#fff", border: "1px solid #ddd", fontSize: 13, color: "#555" },
+  btnPrimary:   { width: "100%", padding: "16px", background: "#ef5b1f", color: "#fff", border: "none", borderRadius: 10, fontSize: 16, fontWeight: 700, cursor: "pointer", marginTop: 8, fontFamily: "Poppins, sans-serif" },
+  btnSecondary: { width: "100%", padding: "12px", background: "#fff", color: "#ef5b1f", border: "1px solid #ef5b1f", borderRadius: 10, fontSize: 14, cursor: "pointer", fontFamily: "Poppins, sans-serif" },
+  error:        { color: "#dc2626", fontSize: 13, margin: 0 },
+  successBox:   { display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "100vh", background: "#f7f4f2", color: "#111", textAlign: "center", padding: 32, gap: 12 },
+  fieldGroup:   { display: "flex", flexDirection: "column", gap: 6 },
 };
