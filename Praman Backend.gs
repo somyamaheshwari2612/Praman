@@ -101,7 +101,7 @@ function groupAndUpdateCases(ss) {
     }
     if (!matched) {
       cases.push({
-        case_id: "C_" + Date.now() + "_" + index,
+        case_id: "C_" + report.category.replace(/\s+/g, "_") + "_" + Math.round(parseFloat(report.lat) * 1000) + "_" + Math.round(parseFloat(report.lng) * 1000),
         category: report.category,
         center_lat: parseFloat(report.lat),
         center_lng: parseFloat(report.lng),

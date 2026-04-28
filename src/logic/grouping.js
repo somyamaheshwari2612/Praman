@@ -102,4 +102,3 @@ export function getPriorityScore(c) {
 
   return escalationScore + inactionScore + countScore + proofScore;
 }
-
