@@ -115,7 +115,12 @@ if (form) {
     }
 
     if (!clustered) {
-     reports.push({
+
+const reader = new FileReader();
+
+reader.onload = function(e){
+
+reports.push({
 id: Date.now(),
 title,
 category,
@@ -123,10 +128,21 @@ description,
 lat,
 lng,
 count: 1,
-createdAt: Date.now()
+createdAt: Date.now(),
+photo: e.target.result
 });
-    }
 
+saveReports(reports);
+
+alert("Report Submitted!");
+window.location.href = "board.html";
+
+};
+
+reader.readAsDataURL(photo);
+
+return;
+}
     saveReports(reports);
 
     alert("Report Submitted!");
